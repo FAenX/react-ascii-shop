@@ -32,7 +32,8 @@
 }
 
 .product{
-    /* height: 200px;
-    width: 200px; */
-    background-color: blanchedalmond;
+    min-height: 100px;
+    min-width: 100px;
+    background-color: rgba(131, 131, 131, 0.507);
+    border-radius: 50%;
 }

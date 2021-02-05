@@ -1,6 +1,6 @@
 {
 "watch": [
-    "public/"
+    "public", "src/*/*"
 ],
 "ext": "js",
 "ignore": ["index.js"],
