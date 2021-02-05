@@ -1,0 +1,8 @@
+{
+"watch": [
+    "public/"
+],
+"ext": "js",
+"ignore": ["index.js"],
+"exec": "browserify public/app.js -o public/index.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] --plugins [ babel-plugin-transform-class-properties ] ]" 
+}
