@@ -5,7 +5,7 @@
   "description": "Build a grid of product items and ads",
   "main": "server/index.js",
   "scripts": {
-    "start": "json-server server/index.js --routes server/routes.json --middlewares server/handle-delay.js server/handle-ads.js",
+    "start": "npm run build & json-server server/index.js --routes server/routes.json --middlewares server/handle-delay.js server/handle-ads.js",
     "build": "browserify public/app.js -o public/index.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] --plugins [ babel-plugin-transform-class-properties ] ]",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

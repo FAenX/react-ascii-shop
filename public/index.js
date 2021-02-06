@@ -53540,7 +53540,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getProducts = void 0;
 
 var getProducts = function getProducts() {
-  return fetch('/products?_page=0&_limit=15');
+  return fetch('/products?_page=0&_limit=18');
 };
 
 exports.getProducts = getProducts;
@@ -53572,11 +53572,13 @@ function Main(_ref) {
   }, []);
 
   return /*#__PURE__*/_react["default"].createElement("div", {
-    className: "is-flex is-flex-wrap-wrap is-justify-content-center"
+    className: "is-flex is-flex-direction-column is-justify-content-center is-align-content-center p-4"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "grid-container"
   }, state.reducer.data && state.reducer.data.length > 0 ? state.reducer.data.map(function (face) {
     return /*#__PURE__*/_react["default"].createElement("div", {
       key: face.id,
-      className: "is-flex is-flex-direction-column is-justify-content-center p-4 m-2"
+      className: "grid-item is-flex is-flex-direction-column is-justify-content-center p-4 m-2"
     }, /*#__PURE__*/_react["default"].createElement("div", {
       className: "product p-2 is-flex is-justify-content-center is-align-items-center",
       style: {
@@ -53587,7 +53589,7 @@ function Main(_ref) {
     }, (0, _utils.getRelativeDateOrNot)(face.date)), /*#__PURE__*/_react["default"].createElement("div", {
       className: "p-2 is-size-4"
     }, " Price: $", face.price));
-  }) : "loading");
+  }) : "loading"));
 }
 
 var _default = (0, _reactRedux.connect)(function (state, dispatch) {
