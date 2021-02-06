@@ -4,6 +4,7 @@ import {getProductsQ} from '../queries/products'
 import {getRelativeDateOrNot} from '../utils/utils'
 import Loader from '../components/loader'
 import {getProducts, updateProducts} from '../api/products'
+import _ from 'lodash'
 
 
 function Main({dispatch, state}){
@@ -11,17 +12,22 @@ function Main({dispatch, state}){
         getProductsQ(dispatch, state)
 
         const observerCallBack=async ()=>{
-            console.log(state)
             state.reducer['loading']=true
             dispatch({type:'SET_STATE', state: {...state.reducer}})
 
             state.reducer['page'] += 1
             const response = await getProducts(state.reducer['page'])
+            const res=await response.json()
+            let data =  state.reducer['data']
+            console.log(data)
+            data=_.concat([...data], [...res]) 
+            console.log(data)
+        
+            state.reducer['data'] = data
             dispatch({type:'SET_STATE', state: {...state.reducer}})
 
             state.reducer['loading']=false
             dispatch({type:'SET_STATE', state: {...state.reducer}})
-            console.log(response)
             console.log('scrolled')
         }
 
