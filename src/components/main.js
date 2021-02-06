@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {getProductsQ} from '../queries/products'
 import {handleObserver, getRelativeDateOrNot} from '../utils/utils'
+import Loader from '../components/loader'
 
 
 function Main({dispatch, state}){
@@ -16,14 +17,16 @@ function Main({dispatch, state}){
                             return (
                                 <div key={face.id} className="grid-item is-flex is-flex-direction-column is-justify-content-center p-4 m-2">
                                     
-                                    <div className="product p-2 is-flex is-justify-content-center is-align-items-center" style={{fontSize: face.size}}>{face.face}</div>
-                                    <div className="p-2">{getRelativeDateOrNot(face.date)}</div>
+                                    <div className="product p-2 is-flex is-justify-content-center is-align-items-center" style={{fontSize: face.size, color: 'green'}}>{face.face}</div>
+                                    <div className="p-2" >{getRelativeDateOrNot(face.date)}</div>
+                                    <div className="p-2" >size: {face.size} px</div>
                                     <div className="p-2 is-size-4"> Price: ${face.price}</div>
                                     
                                 </div>)
                         })
-                    : "loading"}
+                    : <Loader/>}
                 </div>
+                
             </div>
     )
 }

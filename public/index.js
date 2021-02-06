@@ -53531,7 +53531,7 @@ function Index() {
 
 _reactDom["default"].render( /*#__PURE__*/_react["default"].createElement(Index, null), document.getElementById("products"));
 
-},{"../src/components/main":291,"../src/store/root-reducer":294,"react":278,"react-dom":249,"react-redux":267,"redux":279,"regenerator-runtime/runtime.js":280}],290:[function(require,module,exports){
+},{"../src/components/main":292,"../src/store/root-reducer":295,"react":278,"react-dom":249,"react-redux":267,"redux":279,"regenerator-runtime/runtime.js":280}],290:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53540,7 +53540,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getProducts = void 0;
 
 var getProducts = function getProducts() {
-  return fetch('/products?_page=0&_limit=18');
+  return fetch('/products?_page=0&_limit=8');
 };
 
 exports.getProducts = getProducts;
@@ -53557,9 +53557,42 @@ var _react = _interopRequireDefault(require("react"));
 
 var _reactRedux = require("react-redux");
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function Loader() {
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "loader-wrapper"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "loader is-loading"
+  }));
+}
+
+var _default = (0, _reactRedux.connect)(function (state, dispatch) {
+  return {
+    state: state,
+    dispatch: dispatch
+  };
+})(Loader);
+
+exports["default"] = _default;
+
+},{"react":278,"react-redux":267}],292:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactRedux = require("react-redux");
+
 var _products = require("../queries/products");
 
 var _utils = require("../utils/utils");
+
+var _loader = _interopRequireDefault(require("../components/loader"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -53582,14 +53615,17 @@ function Main(_ref) {
     }, /*#__PURE__*/_react["default"].createElement("div", {
       className: "product p-2 is-flex is-justify-content-center is-align-items-center",
       style: {
-        fontSize: face.size
+        fontSize: face.size,
+        color: 'green'
       }
     }, face.face), /*#__PURE__*/_react["default"].createElement("div", {
       className: "p-2"
     }, (0, _utils.getRelativeDateOrNot)(face.date)), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "p-2"
+    }, "size: ", face.size, " px"), /*#__PURE__*/_react["default"].createElement("div", {
       className: "p-2 is-size-4"
     }, " Price: $", face.price));
-  }) : "loading"));
+  }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)));
 }
 
 var _default = (0, _reactRedux.connect)(function (state, dispatch) {
@@ -53601,7 +53637,7 @@ var _default = (0, _reactRedux.connect)(function (state, dispatch) {
 
 exports["default"] = _default;
 
-},{"../queries/products":292,"../utils/utils":295,"react":278,"react-redux":267}],292:[function(require,module,exports){
+},{"../components/loader":291,"../queries/products":293,"../utils/utils":296,"react":278,"react-redux":267}],293:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53632,25 +53668,31 @@ function _getProductsQ() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            state.reducer['loading'] = true;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            _context.next = 4;
             return (0, _products.getProducts)();
 
-          case 2:
+          case 4:
             res = _context.sent;
-            _context.next = 5;
+            _context.next = 7;
             return res.json();
 
-          case 5:
+          case 7:
             data = _context.sent;
             state.reducer['data'] = data;
             state.reducer['page'] = 1;
+            state.reducer['loading'] = false;
             console.log(state);
             dispatch({
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
 
-          case 10:
+          case 13:
           case "end":
             return _context.stop();
         }
@@ -53660,7 +53702,7 @@ function _getProductsQ() {
   return _getProductsQ.apply(this, arguments);
 }
 
-},{"../api/products":290}],293:[function(require,module,exports){
+},{"../api/products":290}],294:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53691,7 +53733,7 @@ var _default = function _default() {
 
 exports["default"] = _default;
 
-},{}],294:[function(require,module,exports){
+},{}],295:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53711,7 +53753,7 @@ var rootReducer = (0, _redux.combineReducers)({
 var _default = rootReducer;
 exports["default"] = _default;
 
-},{"./reducer":293,"redux":279}],295:[function(require,module,exports){
+},{"./reducer":294,"redux":279}],296:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
