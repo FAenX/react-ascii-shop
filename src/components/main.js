@@ -1,13 +1,38 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {getProductsQ} from '../queries/products'
-import {handleObserver, getRelativeDateOrNot} from '../utils/utils'
+import {getRelativeDateOrNot} from '../utils/utils'
 import Loader from '../components/loader'
+import {getProducts, updateProducts} from '../api/products'
 
 
 function Main({dispatch, state}){
     React.useEffect(()=>{
         getProductsQ(dispatch, state)
+
+        const observerCallBack=async ()=>{
+            console.log(state)
+            state.reducer['loading']=true
+            dispatch({type:'SET_STATE', state: {...state.reducer}})
+
+            state.reducer['page'] += 1
+            const response = await getProducts(state.reducer['page'])
+            dispatch({type:'SET_STATE', state: {...state.reducer}})
+
+            state.reducer['loading']=false
+            dispatch({type:'SET_STATE', state: {...state.reducer}})
+            console.log(response)
+            console.log('scrolled')
+        }
+
+        function handleObserver() { 
+            let observer = new IntersectionObserver(observerCallBack);
+            let target = document.querySelector('#loading-area');
+            observer.observe(target);
+        }
+
+        handleObserver()
+          
     }, [])
     return(
         <div className="is-flex is-flex-direction-column is-justify-content-center is-align-content-center p-4">
@@ -26,7 +51,8 @@ function Main({dispatch, state}){
                         })
                     : <Loader/>}
                 </div>
-                
+                {state.reducer.loading ? <Loader/> : null}
+                <div id="loading-area"></div>
             </div>
     )
 }

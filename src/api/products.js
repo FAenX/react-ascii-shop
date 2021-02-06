@@ -1,3 +1,3 @@
-export const getProducts =()=>{
-    return fetch('/products?_page=0&_limit=8')
+export const getProducts =(page)=>{
+    return fetch(`/products?_page=${page}&_limit=8`)
 }
