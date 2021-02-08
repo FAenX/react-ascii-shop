@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import {Provider} from 'react-redux'
 import ReactDOM from 'react-dom'
 
-import { createStore } from "redux";
-import rootReducer from '../src/store/root-reducer'
+
+import {store} from '../src/store/root-reducer'
 
 import Main from '../src/components/main'
 import "regenerator-runtime/runtime.js";
 
 
-const store = createStore(rootReducer);
+
 
 
 

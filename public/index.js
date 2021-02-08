@@ -70672,9 +70672,7 @@ var _reactRedux = require("react-redux");
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
 
-var _redux = require("redux");
-
-var _rootReducer = _interopRequireDefault(require("../src/store/root-reducer"));
+var _rootReducer = require("../src/store/root-reducer");
 
 var _main = _interopRequireDefault(require("../src/components/main"));
 
@@ -70686,17 +70684,15 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var store = (0, _redux.createStore)(_rootReducer["default"]);
-
 function Index() {
   return /*#__PURE__*/_react["default"].createElement(_reactRedux.Provider, {
-    store: store
+    store: _rootReducer.store
   }, /*#__PURE__*/_react["default"].createElement(_main["default"], null));
 }
 
 _reactDom["default"].render( /*#__PURE__*/_react["default"].createElement(Index, null), document.getElementById("products"));
 
-},{"../src/components/main":293,"../src/store/root-reducer":296,"react":279,"react-dom":250,"react-redux":268,"redux":280,"regenerator-runtime/runtime.js":281}],291:[function(require,module,exports){
+},{"../src/components/main":293,"../src/store/root-reducer":296,"react":279,"react-dom":250,"react-redux":268,"regenerator-runtime/runtime.js":281}],291:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70704,14 +70700,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getProducts = void 0;
 
-var getProducts = function getProducts(page) {
-  var sortby = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+var getProducts = function getProducts(page, sortby) {
+  console.log(sortby);
+  var headers = new Headers();
+  var opts = {};
+  headers.append('cache-control', 'no-cache');
 
   if (sortby) {
-    return fetch("/products?_page=".concat(page, "&_limit=8&_sort=").concat(sortby));
+    return fetch("/products?_page=".concat(page, "&_limit=8&_sort=").concat(sortby), {
+      headers: headers
+    });
   }
 
-  return fetch("/products?_page=".concat(page, "&_limit=8"));
+  return fetch("/products?_page=".concat(page, "&_limit=8"), {
+    headers: headers
+  });
 };
 
 exports.getProducts = getProducts;
@@ -70780,16 +70783,18 @@ function Main(_ref) {
 
   _react["default"].useEffect(function () {
     (0, _products.getProductsQ)(dispatch, state);
-    (0, _utils.handleObserver)(dispatch, state);
+    (0, _utils.handleObserver)();
   }, []);
 
   var handleSort = function handleSort(event) {
     event.preventDefault();
-    state.reducer['sort'] = event.target.value;
+    state.reducer['sortby'] = event.target.value;
+    state.reducer['page'] = 1;
     dispatch({
       type: 'SET_STATE',
       state: _objectSpread({}, state.reducer)
     });
+    (0, _products.getProductsQ)(dispatch, state);
   };
 
   return /*#__PURE__*/_react["default"].createElement("div", {
@@ -70824,7 +70829,7 @@ function Main(_ref) {
     }, " Price: $", face.price));
   }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, /*#__PURE__*/_react["default"].createElement("div", {
     id: "loading-area",
-    className: "mt-6"
+    className: "mt-8"
   }));
 }
 
@@ -70843,7 +70848,7 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.observerCallBack = exports.getProductsQ = void 0;
+exports.updateProductsQ = exports.getProductsQ = void 0;
 
 var _products = require("../api/products");
 
@@ -70878,18 +70883,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // product queries and store update functions
 var getProductsQ = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, state) {
-    var sortby,
-        res,
-        data,
-        _args = arguments;
+    var sortby, res, data;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            sortby = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
+            sortby = null;
 
-            if (sortby) {
-              state.reducer['sortby'] = sortby;
+            if (state.reducer.sortby) {
+              sortby = state.reducer.sortby;
             }
 
             state.reducer['loading'] = true;
@@ -70897,7 +70899,7 @@ var getProductsQ = /*#__PURE__*/function () {
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
-            state.reducer['page'] = 0;
+            state.reducer['page'] = 1;
             _context.next = 7;
             return (0, _products.getProducts)(state.reducer['page'], sortby);
 
@@ -70910,13 +70912,12 @@ var getProductsQ = /*#__PURE__*/function () {
             data = _context.sent;
             state.reducer['data'] = data;
             state.reducer['loading'] = false;
-            console.log(state);
             dispatch({
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
 
-          case 15:
+          case 14:
           case "end":
             return _context.stop();
         }
@@ -70931,29 +70932,26 @@ var getProductsQ = /*#__PURE__*/function () {
 
 exports.getProductsQ = getProductsQ;
 
-var observerCallBack = /*#__PURE__*/function () {
+var updateProductsQ = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dispatch, state) {
-    var sortby,
-        response,
-        res,
-        data,
-        _args2 = arguments;
+    var sortby, response, res, data;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            sortby = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : null;
+            // console.log(state)
+            sortby = null;
 
-            if (sortby) {
-              state.reducer['sortby'] = sortby;
+            if (state.reducer.sortby) {
+              sortby = state.reducer.sortby;
             }
 
             state.reducer['loading'] = true;
+            state.reducer['page'] += 1;
             dispatch({
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
-            state.reducer['page'] += 1;
             _context2.next = 7;
             return (0, _products.getProducts)(state.reducer['page'], sortby);
 
@@ -70965,9 +70963,7 @@ var observerCallBack = /*#__PURE__*/function () {
           case 10:
             res = _context2.sent;
             data = state.reducer['data'];
-            console.log(data);
             data = _lodash["default"].concat(_toConsumableArray(data), _toConsumableArray(res));
-            console.log(data);
             state.reducer['data'] = data;
             dispatch({
               type: 'SET_STATE',
@@ -70978,9 +70974,8 @@ var observerCallBack = /*#__PURE__*/function () {
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
-            console.log('scrolled');
 
-          case 20:
+          case 17:
           case "end":
             return _context2.stop();
         }
@@ -70988,12 +70983,12 @@ var observerCallBack = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function observerCallBack(_x3, _x4) {
+  return function updateProductsQ(_x3, _x4) {
     return _ref2.apply(this, arguments);
   };
 }();
 
-exports.observerCallBack = observerCallBack;
+exports.updateProductsQ = updateProductsQ;
 
 },{"../api/products":291,"lodash":240,"regenerator-runtime/runtime.js":281}],295:[function(require,module,exports){
 "use strict";
@@ -71032,7 +71027,7 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports.store = void 0;
 
 var _redux = require("redux");
 
@@ -71043,8 +71038,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 var rootReducer = (0, _redux.combineReducers)({
   reducer: _reducer["default"]
 });
-var _default = rootReducer;
-exports["default"] = _default;
+var store = (0, _redux.createStore)(rootReducer);
+exports.store = store;
 
 },{"./reducer":295,"redux":280}],297:[function(require,module,exports){
 "use strict";
@@ -71052,13 +71047,19 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.handleObserver = exports.getRelativeDateOrNot = void 0;
+exports.observerCallBack = exports.handleObserver = exports.getRelativeDateOrNot = void 0;
 
 var _dateFns = require("date-fns");
 
+require("regenerator-runtime/runtime.js");
+
 var _products = require("../queries/products");
 
-require("regenerator-runtime/runtime.js");
+var _rootReducer = require("../store/root-reducer");
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var getRelativeDateOrNot = function getRelativeDateOrNot(date) {
   var today = new Date();
@@ -71068,14 +71069,43 @@ var getRelativeDateOrNot = function getRelativeDateOrNot(date) {
 
 exports.getRelativeDateOrNot = getRelativeDateOrNot;
 
-var handleObserver = function handleObserver(dispatch, state) {
-  var observer = new IntersectionObserver(function () {
-    return (0, _products.observerCallBack)(dispatch, state);
+var handleObserver = function handleObserver() {
+  var observer = new IntersectionObserver(function (entries, observer) {
+    return observerCallBack(entries, observer);
   });
   var target = document.querySelector('#loading-area');
-  observer.observe(target);
+  observer.observe(target); // observer.unobserve(target)
 };
 
 exports.handleObserver = handleObserver;
 
-},{"../queries/products":294,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);
+var observerCallBack = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(entries, observer) {
+    var isIntersecting;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            console.log(entries[0].isIntersecting);
+            isIntersecting = entries[0].isIntersecting;
+
+            if (isIntersecting) {
+              (0, _products.updateProductsQ)(_rootReducer.store.dispatch, _rootReducer.store.getState());
+            }
+
+          case 3:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function observerCallBack(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.observerCallBack = observerCallBack;
+
+},{"../queries/products":294,"../store/root-reducer":296,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);

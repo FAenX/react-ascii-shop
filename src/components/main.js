@@ -1,20 +1,24 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getProductsQ} from '../queries/products'
+import {getProductsQ, updateProductsQ} from '../queries/products'
 import {getRelativeDateOrNot, handleObserver} from '../utils/utils'
 import Loader from '../components/loader'
 
 
 function Main({dispatch, state}){
     React.useEffect(()=>{
-        getProductsQ(dispatch, state)
-        handleObserver(dispatch, state)
+        getProductsQ(dispatch, state);
+        handleObserver()  
     }, [])
+
+    
 
     const handleSort=(event)=>{
         event.preventDefault()
-        state.reducer['sort'] = event.target.value
+        state.reducer['sortby'] = event.target.value
+        state.reducer['page'] = 1
         dispatch({type:'SET_STATE', state: {...state.reducer}})
+        getProductsQ(dispatch, state)
     }
       
     return(
@@ -24,7 +28,7 @@ function Main({dispatch, state}){
                 {/* sort options */}
                 <div className="is-flex p-2">
                 <div className="m-2 is-size-4">sort</div>
-                <div className="select" onChange={handleSort}>
+                <div className="select" onChange={handleSort} >
                     <select>
                         <option>{null}</option>
                         <option>date</option>
@@ -52,7 +56,7 @@ function Main({dispatch, state}){
                     : <Loader/>}
                 </div>
                 {state.reducer.loading ? <Loader/> : null}
-                <div id="loading-area" className="mt-6"></div>
+                <div id="loading-area" className="mt-8"></div>
             </div>
     )
 }
