@@ -70705,6 +70705,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.getProducts = void 0;
 
 var getProducts = function getProducts(page) {
+  var sortby = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+  if (sortby) {
+    return fetch("/products?_page=".concat(page, "&_limit=8&_sort=").concat(sortby));
+  }
+
   return fetch("/products?_page=".concat(page, "&_limit=8"));
 };
 
@@ -70760,7 +70766,88 @@ var _utils = require("../utils/utils");
 
 var _loader = _interopRequireDefault(require("../components/loader"));
 
-var _products2 = require("../api/products");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function Main(_ref) {
+  var dispatch = _ref.dispatch,
+      state = _ref.state;
+
+  _react["default"].useEffect(function () {
+    (0, _products.getProductsQ)(dispatch, state);
+    (0, _utils.handleObserver)(dispatch, state);
+  }, []);
+
+  var handleSort = function handleSort(event) {
+    event.preventDefault();
+    state.reducer['sort'] = event.target.value;
+    dispatch({
+      type: 'SET_STATE',
+      state: _objectSpread({}, state.reducer)
+    });
+  };
+
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "is-flex is-flex-direction-column is-justify-content-center is-align-content-center p-4"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "is-flex is-justify-content-center"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "is-flex p-2"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "m-2 is-size-4"
+  }, "sort"), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "select",
+    onChange: handleSort
+  }, /*#__PURE__*/_react["default"].createElement("select", null, /*#__PURE__*/_react["default"].createElement("option", null, null), /*#__PURE__*/_react["default"].createElement("option", null, "date"), /*#__PURE__*/_react["default"].createElement("option", null, "size"), /*#__PURE__*/_react["default"].createElement("option", null, "price"))))), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "grid-container"
+  }, state.reducer.data && state.reducer.data.length > 0 ? state.reducer.data.map(function (face) {
+    return /*#__PURE__*/_react["default"].createElement("div", {
+      key: face.id,
+      className: "grid-item is-flex is-flex-direction-column is-justify-content-center p-4 m-2"
+    }, /*#__PURE__*/_react["default"].createElement("div", {
+      className: "product p-2 is-flex is-justify-content-center is-align-items-center",
+      style: {
+        fontSize: face.size,
+        color: 'green'
+      }
+    }, face.face), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "p-2"
+    }, (0, _utils.getRelativeDateOrNot)(face.date)), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "p-2"
+    }, "size: ", face.size, " px"), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "p-2 is-size-4"
+    }, " Price: $", face.price));
+  }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, /*#__PURE__*/_react["default"].createElement("div", {
+    id: "loading-area",
+    className: "mt-6"
+  }));
+}
+
+var _default = (0, _reactRedux.connect)(function (state, dispatch) {
+  return {
+    state: state,
+    dispatch: dispatch
+  };
+})(Main);
+
+exports["default"] = _default;
+
+},{"../components/loader":292,"../queries/products":294,"../utils/utils":297,"react":279,"react-redux":268}],294:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.observerCallBack = exports.getProductsQ = void 0;
+
+var _products = require("../api/products");
+
+require("regenerator-runtime/runtime.js");
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
@@ -70788,158 +70875,40 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function Main(_ref) {
-  var dispatch = _ref.dispatch,
-      state = _ref.state;
-
-  _react["default"].useEffect(function () {
-    (0, _products.getProductsQ)(dispatch, state);
-
-    var observerCallBack = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var response, res, data;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                state.reducer['loading'] = true;
-                dispatch({
-                  type: 'SET_STATE',
-                  state: _objectSpread({}, state.reducer)
-                });
-                state.reducer['page'] += 1;
-                _context.next = 5;
-                return (0, _products2.getProducts)(state.reducer['page']);
-
-              case 5:
-                response = _context.sent;
-                _context.next = 8;
-                return response.json();
-
-              case 8:
-                res = _context.sent;
-                data = state.reducer['data'];
-                console.log(data);
-                data = _lodash["default"].concat(_toConsumableArray(data), _toConsumableArray(res));
-                console.log(data);
-                state.reducer['data'] = data;
-                dispatch({
-                  type: 'SET_STATE',
-                  state: _objectSpread({}, state.reducer)
-                });
-                state.reducer['loading'] = false;
-                dispatch({
-                  type: 'SET_STATE',
-                  state: _objectSpread({}, state.reducer)
-                });
-                console.log('scrolled');
-
-              case 18:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee);
-      }));
-
-      return function observerCallBack() {
-        return _ref2.apply(this, arguments);
-      };
-    }();
-
-    function handleObserver() {
-      var observer = new IntersectionObserver(observerCallBack);
-      var target = document.querySelector('#loading-area');
-      observer.observe(target);
-    }
-
-    handleObserver();
-  }, []);
-
-  return /*#__PURE__*/_react["default"].createElement("div", {
-    className: "is-flex is-flex-direction-column is-justify-content-center is-align-content-center p-4"
-  }, /*#__PURE__*/_react["default"].createElement("div", {
-    className: "grid-container"
-  }, state.reducer.data && state.reducer.data.length > 0 ? state.reducer.data.map(function (face) {
-    return /*#__PURE__*/_react["default"].createElement("div", {
-      key: face.id,
-      className: "grid-item is-flex is-flex-direction-column is-justify-content-center p-4 m-2"
-    }, /*#__PURE__*/_react["default"].createElement("div", {
-      className: "product p-2 is-flex is-justify-content-center is-align-items-center",
-      style: {
-        fontSize: face.size,
-        color: 'green'
-      }
-    }, face.face), /*#__PURE__*/_react["default"].createElement("div", {
-      className: "p-2"
-    }, (0, _utils.getRelativeDateOrNot)(face.date)), /*#__PURE__*/_react["default"].createElement("div", {
-      className: "p-2"
-    }, "size: ", face.size, " px"), /*#__PURE__*/_react["default"].createElement("div", {
-      className: "p-2 is-size-4"
-    }, " Price: $", face.price));
-  }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, /*#__PURE__*/_react["default"].createElement("div", {
-    id: "loading-area"
-  }));
-}
-
-var _default = (0, _reactRedux.connect)(function (state, dispatch) {
-  return {
-    state: state,
-    dispatch: dispatch
-  };
-})(Main);
-
-exports["default"] = _default;
-
-},{"../api/products":291,"../components/loader":292,"../queries/products":294,"../utils/utils":297,"lodash":240,"react":279,"react-redux":268}],294:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getProductsQ = getProductsQ;
-
-var _products = require("../api/products");
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function getProductsQ(_x, _x2) {
-  return _getProductsQ.apply(this, arguments);
-}
-
-function _getProductsQ() {
-  _getProductsQ = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, state) {
-    var res, data;
+// product queries and store update functions
+var getProductsQ = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, state) {
+    var sortby,
+        res,
+        data,
+        _args = arguments;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            sortby = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
+
+            if (sortby) {
+              state.reducer['sortby'] = sortby;
+            }
+
             state.reducer['loading'] = true;
             dispatch({
               type: 'SET_STATE',
               state: _objectSpread({}, state.reducer)
             });
-            state.reducer['page'] += 1;
-            _context.next = 5;
-            return (0, _products.getProducts)(state.reducer['page']);
+            state.reducer['page'] = 0;
+            _context.next = 7;
+            return (0, _products.getProducts)(state.reducer['page'], sortby);
 
-          case 5:
+          case 7:
             res = _context.sent;
-            _context.next = 8;
+            _context.next = 10;
             return res.json();
 
-          case 8:
+          case 10:
             data = _context.sent;
             state.reducer['data'] = data;
-            state.reducer['page'] = 0;
             state.reducer['loading'] = false;
             console.log(state);
             dispatch({
@@ -70947,17 +70916,86 @@ function _getProductsQ() {
               state: _objectSpread({}, state.reducer)
             });
 
-          case 14:
+          case 15:
           case "end":
             return _context.stop();
         }
       }
     }, _callee);
   }));
-  return _getProductsQ.apply(this, arguments);
-}
 
-},{"../api/products":291}],295:[function(require,module,exports){
+  return function getProductsQ(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.getProductsQ = getProductsQ;
+
+var observerCallBack = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dispatch, state) {
+    var sortby,
+        response,
+        res,
+        data,
+        _args2 = arguments;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            sortby = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : null;
+
+            if (sortby) {
+              state.reducer['sortby'] = sortby;
+            }
+
+            state.reducer['loading'] = true;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            state.reducer['page'] += 1;
+            _context2.next = 7;
+            return (0, _products.getProducts)(state.reducer['page'], sortby);
+
+          case 7:
+            response = _context2.sent;
+            _context2.next = 10;
+            return response.json();
+
+          case 10:
+            res = _context2.sent;
+            data = state.reducer['data'];
+            console.log(data);
+            data = _lodash["default"].concat(_toConsumableArray(data), _toConsumableArray(res));
+            console.log(data);
+            state.reducer['data'] = data;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            state.reducer['loading'] = false;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            console.log('scrolled');
+
+          case 20:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function observerCallBack(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.observerCallBack = observerCallBack;
+
+},{"../api/products":291,"lodash":240,"regenerator-runtime/runtime.js":281}],295:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71014,18 +71052,30 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getRelativeDateOrNot = getRelativeDateOrNot;
+exports.handleObserver = exports.getRelativeDateOrNot = void 0;
 
 var _dateFns = require("date-fns");
 
-var _products = require("../api/products");
+var _products = require("../queries/products");
 
 require("regenerator-runtime/runtime.js");
 
-function getRelativeDateOrNot(date) {
+var getRelativeDateOrNot = function getRelativeDateOrNot(date) {
   var today = new Date();
   var difference = (0, _dateFns.differenceInDays)(today, new Date(date));
   return difference == 1 ? "".concat(difference, " day ago") : difference > 7 ? (0, _dateFns.format)(new Date(date), 'MMM dd yyyy') : "".concat(difference, " days ago");
-}
+};
 
-},{"../api/products":291,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);
+exports.getRelativeDateOrNot = getRelativeDateOrNot;
+
+var handleObserver = function handleObserver(dispatch, state) {
+  var observer = new IntersectionObserver(function () {
+    return (0, _products.observerCallBack)(dispatch, state);
+  });
+  var target = document.querySelector('#loading-area');
+  observer.observe(target);
+};
+
+exports.handleObserver = handleObserver;
+
+},{"../queries/products":294,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);

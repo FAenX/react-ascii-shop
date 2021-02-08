@@ -1,47 +1,41 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {getProductsQ} from '../queries/products'
-import {getRelativeDateOrNot} from '../utils/utils'
+import {getRelativeDateOrNot, handleObserver} from '../utils/utils'
 import Loader from '../components/loader'
-import {getProducts, updateProducts} from '../api/products'
-import _ from 'lodash'
 
 
 function Main({dispatch, state}){
     React.useEffect(()=>{
         getProductsQ(dispatch, state)
-
-        const observerCallBack=async ()=>{
-            state.reducer['loading']=true
-            dispatch({type:'SET_STATE', state: {...state.reducer}})
-
-            state.reducer['page'] += 1
-            const response = await getProducts(state.reducer['page'])
-            const res=await response.json()
-            let data =  state.reducer['data']
-            console.log(data)
-            data=_.concat([...data], [...res]) 
-            console.log(data)
-        
-            state.reducer['data'] = data
-            dispatch({type:'SET_STATE', state: {...state.reducer}})
-
-            state.reducer['loading']=false
-            dispatch({type:'SET_STATE', state: {...state.reducer}})
-            console.log('scrolled')
-        }
-
-        function handleObserver() { 
-            let observer = new IntersectionObserver(observerCallBack);
-            let target = document.querySelector('#loading-area');
-            observer.observe(target);
-        }
-
-        handleObserver()
-          
+        handleObserver(dispatch, state)
     }, [])
+
+    const handleSort=(event)=>{
+        event.preventDefault()
+        state.reducer['sort'] = event.target.value
+        dispatch({type:'SET_STATE', state: {...state.reducer}})
+    }
+      
     return(
         <div className="is-flex is-flex-direction-column is-justify-content-center is-align-content-center p-4">
+            
+            <div className="is-flex is-justify-content-center">
+                {/* sort options */}
+                <div className="is-flex p-2">
+                <div className="m-2 is-size-4">sort</div>
+                <div className="select" onChange={handleSort}>
+                    <select>
+                        <option>{null}</option>
+                        <option>date</option>
+                        <option>size</option>
+                        <option>price</option>
+                        
+                    </select>
+                </div>
+                </div>
+                </div>
+                {/* products grid */}
             <div className="grid-container">
                 {state.reducer.data && state.reducer.data.length > 0 ? 
                         state.reducer.data.map(face=>{
@@ -58,7 +52,7 @@ function Main({dispatch, state}){
                     : <Loader/>}
                 </div>
                 {state.reducer.loading ? <Loader/> : null}
-                <div id="loading-area"></div>
+                <div id="loading-area" className="mt-6"></div>
             </div>
     )
 }
