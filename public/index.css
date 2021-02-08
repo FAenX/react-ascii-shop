@@ -33,8 +33,6 @@ body{
 }
 
 .a-wrapper{
-    /* width: 200px;
-    height: 300px; */
     display: flex;
     flex-direction: column;
     align-items: center;

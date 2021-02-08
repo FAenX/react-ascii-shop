@@ -70684,6 +70684,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+// to wrap react redux store provider
 function Index() {
   return /*#__PURE__*/_react["default"].createElement(_reactRedux.Provider, {
     store: _rootReducer.store
@@ -70692,7 +70693,7 @@ function Index() {
 
 _reactDom["default"].render( /*#__PURE__*/_react["default"].createElement(Index, null), document.getElementById("products"));
 
-},{"../src/components/main":293,"../src/store/root-reducer":296,"react":279,"react-dom":250,"react-redux":268,"regenerator-runtime/runtime.js":281}],291:[function(require,module,exports){
+},{"../src/components/main":294,"../src/store/root-reducer":297,"react":279,"react-dom":250,"react-redux":268,"regenerator-runtime/runtime.js":281}],291:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70701,18 +70702,17 @@ Object.defineProperty(exports, "__esModule", {
 exports.getProducts = void 0;
 
 var getProducts = function getProducts(page, sortby) {
-  console.log(sortby);
-  var headers = new Headers();
-  var opts = {};
-  headers.append('cache-control', 'no-cache');
+  var headers = new Headers(); // do not cache
+
+  headers.append('cache-control', 'no-cache'); // if the request has a sort param
 
   if (sortby) {
-    return fetch("/products?_page=".concat(page, "&_limit=8&_sort=").concat(sortby), {
+    return fetch("/products?_page=".concat(page, "&_limit=12&_sort=").concat(sortby), {
       headers: headers
     });
   }
 
-  return fetch("/products?_page=".concat(page, "&_limit=8"), {
+  return fetch("/products?_page=".concat(page, "&_limit=12"), {
     headers: headers
   });
 };
@@ -70720,6 +70720,44 @@ var getProducts = function getProducts(page, sortby) {
 exports.getProducts = getProducts;
 
 },{}],292:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactRedux = require("react-redux");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var Ad = function Ad(_ref) {
+  var state = _ref.state,
+      dispatch = _ref.dispatch;
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "container a-wrapper m-8 d"
+  }, /*#__PURE__*/_react["default"].createElement("div", {
+    className: "ad p-2"
+  }, /*#__PURE__*/_react["default"].createElement("img", {
+    className: "ad",
+    src: "/ads/?r=" + Math.floor(Math.random() * 1000)
+  })), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "p-2"
+  }, "A word form our sponsers"));
+};
+
+var _default = (0, _reactRedux.connect)(function (state, dispatch) {
+  return {
+    state: state,
+    dispatch: dispatch
+  };
+})(Ad);
+
+exports["default"] = _default;
+
+},{"react":279,"react-redux":268}],293:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70751,7 +70789,7 @@ var _default = (0, _reactRedux.connect)(function (state, dispatch) {
 
 exports["default"] = _default;
 
-},{"react":279,"react-redux":268}],293:[function(require,module,exports){
+},{"react":279,"react-redux":268}],294:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70768,6 +70806,8 @@ var _products = require("../queries/products");
 var _utils = require("../utils/utils");
 
 var _loader = _interopRequireDefault(require("../components/loader"));
+
+var _ad = _interopRequireDefault(require("../components/ad"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -70811,7 +70851,7 @@ function Main(_ref) {
   }, /*#__PURE__*/_react["default"].createElement("select", null, /*#__PURE__*/_react["default"].createElement("option", null, null), /*#__PURE__*/_react["default"].createElement("option", null, "date"), /*#__PURE__*/_react["default"].createElement("option", null, "size"), /*#__PURE__*/_react["default"].createElement("option", null, "price"))))), /*#__PURE__*/_react["default"].createElement("div", {
     className: "grid-container"
   }, state.reducer.data && state.reducer.data.length > 0 ? state.reducer.data.map(function (face) {
-    return /*#__PURE__*/_react["default"].createElement("div", {
+    return /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("div", {
       key: face.id,
       className: "grid-item is-flex is-flex-direction-column is-justify-content-center p-4 m-2"
     }, /*#__PURE__*/_react["default"].createElement("div", {
@@ -70826,8 +70866,13 @@ function Main(_ref) {
       className: "p-2"
     }, "size: ", face.size, " px"), /*#__PURE__*/_react["default"].createElement("div", {
       className: "p-2 is-size-4"
-    }, " Price: $", face.price));
-  }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, /*#__PURE__*/_react["default"].createElement("div", {
+    }, " Price: $", face.price)), state.reducer.data && state.reducer.data.indexOf(face) !== 0 && state.reducer.data.indexOf(face) % 20 === 0 ? /*#__PURE__*/_react["default"].createElement(_ad["default"], null) : null);
+  }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, state.reducer.endOfData ? /*#__PURE__*/_react["default"].createElement("div", {
+    style: {
+      height: "300px"
+    },
+    className: "p-4 is-size-1 is-flex is-justify-content-center"
+  }, "No more data to load") : null, /*#__PURE__*/_react["default"].createElement("div", {
     id: "loading-area",
     className: "mt-8"
   }));
@@ -70842,7 +70887,7 @@ var _default = (0, _reactRedux.connect)(function (state, dispatch) {
 
 exports["default"] = _default;
 
-},{"../components/loader":292,"../queries/products":294,"../utils/utils":297,"react":279,"react-redux":268}],294:[function(require,module,exports){
+},{"../components/ad":292,"../components/loader":293,"../queries/products":295,"../utils/utils":298,"react":279,"react-redux":268}],295:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70962,6 +71007,13 @@ var updateProductsQ = /*#__PURE__*/function () {
 
           case 10:
             res = _context2.sent;
+
+            // each page loads 12 items hardcoded to the fetch request
+            // i want to know that this is the last batch
+            if (res.length < 12) {
+              state.reducer['endOfData'] = true;
+            }
+
             data = state.reducer['data'];
             data = _lodash["default"].concat(_toConsumableArray(data), _toConsumableArray(res));
             state.reducer['data'] = data;
@@ -70975,7 +71027,7 @@ var updateProductsQ = /*#__PURE__*/function () {
               state: _objectSpread({}, state.reducer)
             });
 
-          case 17:
+          case 18:
           case "end":
             return _context2.stop();
         }
@@ -70990,7 +71042,7 @@ var updateProductsQ = /*#__PURE__*/function () {
 
 exports.updateProductsQ = updateProductsQ;
 
-},{"../api/products":291,"lodash":240,"regenerator-runtime/runtime.js":281}],295:[function(require,module,exports){
+},{"../api/products":291,"lodash":240,"regenerator-runtime/runtime.js":281}],296:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71021,7 +71073,7 @@ var _default = function _default() {
 
 exports["default"] = _default;
 
-},{}],296:[function(require,module,exports){
+},{}],297:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71035,13 +71087,14 @@ var _reducer = _interopRequireDefault(require("./reducer"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// combine reducers
 var rootReducer = (0, _redux.combineReducers)({
   reducer: _reducer["default"]
 });
 var store = (0, _redux.createStore)(rootReducer);
 exports.store = store;
 
-},{"./reducer":295,"redux":280}],297:[function(require,module,exports){
+},{"./reducer":296,"redux":280}],298:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71108,4 +71161,4 @@ var observerCallBack = /*#__PURE__*/function () {
 
 exports.observerCallBack = observerCallBack;
 
-},{"../queries/products":294,"../store/root-reducer":296,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);
+},{"../queries/products":295,"../store/root-reducer":297,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);

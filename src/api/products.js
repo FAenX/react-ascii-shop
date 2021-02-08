@@ -1,12 +1,11 @@
 export const getProducts =(page, sortby)=>{
-    console.log(sortby)
     const headers = new Headers()
-    const opts = {
-
-    }
+    // do not cache
     headers.append('cache-control', 'no-cache');
+
+    // if the request has a sort param
     if(sortby){
-        return fetch(`/products?_page=${page}&_limit=8&_sort=${sortby}`, {headers})
+        return fetch(`/products?_page=${page}&_limit=12&_sort=${sortby}`, {headers})
     }
-    return fetch(`/products?_page=${page}&_limit=8`, {headers})
+    return fetch(`/products?_page=${page}&_limit=12`, {headers})
 }
