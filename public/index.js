@@ -71010,7 +71010,7 @@ var updateProductsQ = /*#__PURE__*/function () {
 
             // each page loads 12 items hardcoded to the fetch request
             // i want to know that this is the last batch
-            if (res.length < 12) {
+            if (res.length < 1) {
               state.reducer['endOfData'] = true;
             }
 
