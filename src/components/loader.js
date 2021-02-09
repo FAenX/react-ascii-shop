@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+// oader component
 function Loader(){
     return(
         <div className="loader-wrapper">

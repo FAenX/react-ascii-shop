@@ -70733,6 +70733,7 @@ var _reactRedux = require("react-redux");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// ad component
 var Ad = function Ad(_ref) {
   var state = _ref.state,
       dispatch = _ref.dispatch;
@@ -70771,6 +70772,7 @@ var _reactRedux = require("react-redux");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// oader component
 function Loader() {
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "loader-wrapper"
@@ -70817,14 +70819,20 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+// main component
 function Main(_ref) {
   var dispatch = _ref.dispatch,
       state = _ref.state;
 
   _react["default"].useEffect(function () {
-    (0, _products.getProductsQ)(dispatch, state);
-    (0, _utils.handleObserver)();
-  }, []);
+    // get initial back of products products
+    (0, _products.getProductsQ)(dispatch, state); // observer to observe end of page
+
+    (0, _utils.handleObserver)(); // update products when idle for 7 seconds
+
+    (0, _utils.handleInactivityTime)();
+  }, []); // function to handle sorting and get initial sorted products
+
 
   var handleSort = function handleSort(event) {
     event.preventDefault();
@@ -70866,7 +70874,9 @@ function Main(_ref) {
       className: "p-2"
     }, "size: ", face.size, " px"), /*#__PURE__*/_react["default"].createElement("div", {
       className: "p-2 is-size-4"
-    }, " Price: $", face.price)), state.reducer.data && state.reducer.data.indexOf(face) !== 0 && state.reducer.data.indexOf(face) % 20 === 0 ? /*#__PURE__*/_react["default"].createElement(_ad["default"], null) : null);
+    }, " Price: $", face.price)), state.reducer.data && state.reducer.data.indexOf(face) !== 0 && state.reducer.data.indexOf(face) % 20 === 0 ? /*#__PURE__*/_react["default"].createElement(_ad["default"], {
+      key: state.reducer.data.indexOf(face)
+    }) : null);
   }) : /*#__PURE__*/_react["default"].createElement(_loader["default"], null)), state.reducer.loading ? /*#__PURE__*/_react["default"].createElement(_loader["default"], null) : null, state.reducer.endOfData ? /*#__PURE__*/_react["default"].createElement("div", {
     style: {
       height: "300px"
@@ -70893,13 +70903,15 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateProductsQ = exports.getProductsQ = void 0;
+exports.updateProductsOnIdle = exports.updateProductsQ = exports.getProductsQ = void 0;
 
 var _products = require("../api/products");
 
 require("regenerator-runtime/runtime.js");
 
 var _lodash = _interopRequireDefault(require("lodash"));
+
+var _utils = require("../utils/utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -71042,7 +71054,70 @@ var updateProductsQ = /*#__PURE__*/function () {
 
 exports.updateProductsQ = updateProductsQ;
 
-},{"../api/products":291,"lodash":240,"regenerator-runtime/runtime.js":281}],296:[function(require,module,exports){
+var updateProductsOnIdle = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(dispatch, state) {
+    var sortby, response, res, data;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            // console.log(state)
+            sortby = null;
+
+            if (state.reducer.sortby) {
+              sortby = state.reducer.sortby;
+            }
+
+            state.reducer['page'] += 1;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            _context3.next = 6;
+            return (0, _products.getProducts)(state.reducer['page'], sortby);
+
+          case 6:
+            response = _context3.sent;
+            _context3.next = 9;
+            return response.json();
+
+          case 9:
+            res = _context3.sent;
+
+            // each page loads 12 items hardcoded to the fetch request
+            // i want to know that this is the last batch
+            if (res.length < 1) {
+              state.reducer['endOfData'] = true;
+            }
+
+            data = state.reducer['data'];
+            data = _lodash["default"].concat(_toConsumableArray(data), _toConsumableArray(res));
+            state.reducer['data'] = data;
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+            dispatch({
+              type: 'SET_STATE',
+              state: _objectSpread({}, state.reducer)
+            });
+
+          case 16:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+
+  return function updateProductsOnIdle(_x5, _x6) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.updateProductsOnIdle = updateProductsOnIdle;
+
+},{"../api/products":291,"../utils/utils":298,"lodash":240,"regenerator-runtime/runtime.js":281}],296:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -71056,6 +71131,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//  reducer
 var initialState = {}; //reducer
 
 var _default = function _default() {
@@ -71090,7 +71166,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 // combine reducers
 var rootReducer = (0, _redux.combineReducers)({
   reducer: _reducer["default"]
-});
+}); // create redux store
+
 var store = (0, _redux.createStore)(rootReducer);
 exports.store = store;
 
@@ -71100,7 +71177,7 @@ exports.store = store;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.observerCallBack = exports.handleObserver = exports.getRelativeDateOrNot = void 0;
+exports.handleInactivityTime = exports.observerCallBack = exports.handleObserver = exports.getRelativeDateOrNot = void 0;
 
 var _dateFns = require("date-fns");
 
@@ -71114,11 +71191,14 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+// function that returns relative date eg '1 day ago' if date is less than a week
+// or actual date if date is more than a week
 var getRelativeDateOrNot = function getRelativeDateOrNot(date) {
   var today = new Date();
   var difference = (0, _dateFns.differenceInDays)(today, new Date(date));
   return difference == 1 ? "".concat(difference, " day ago") : difference > 7 ? (0, _dateFns.format)(new Date(date), 'MMM dd yyyy') : "".concat(difference, " days ago");
-};
+}; // function  to watch for end of page in order to update data
+
 
 exports.getRelativeDateOrNot = getRelativeDateOrNot;
 
@@ -71127,8 +71207,9 @@ var handleObserver = function handleObserver() {
     return observerCallBack(entries, observer);
   });
   var target = document.querySelector('#loading-area');
-  observer.observe(target); // observer.unobserve(target)
-};
+  observer.observe(target);
+}; // observe end of page to load more data
+
 
 exports.handleObserver = handleObserver;
 
@@ -71157,8 +71238,40 @@ var observerCallBack = /*#__PURE__*/function () {
   return function observerCallBack(_x, _x2) {
     return _ref.apply(this, arguments);
   };
-}();
+}(); // function to handle inactivity time and load next batch
+
 
 exports.observerCallBack = observerCallBack;
+
+var handleInactivityTime = function handleInactivityTime() {
+  var state = _rootReducer.store.getState();
+
+  var timer = function timer() {
+    return setInterval(function () {
+      (0, _products.updateProductsOnIdle)(_rootReducer.store.dispatch, _rootReducer.store.getState());
+    }, 7000);
+  };
+
+  var timerInst = timer();
+
+  var resetTimer = function resetTimer() {
+    clearInterval(timerInst);
+    timerInst = timer();
+  };
+
+  window.addEventListener('load', function () {
+    resetTimer();
+  }); // DOM Events
+
+  window.addEventListener('mousemove', function () {
+    resetTimer();
+  }); // DOM Events
+
+  window.addEventListener('keypress', function () {
+    resetTimer();
+  }); // DOM Events
+};
+
+exports.handleInactivityTime = handleInactivityTime;
 
 },{"../queries/products":295,"../store/root-reducer":297,"date-fns":125,"regenerator-runtime/runtime.js":281}]},{},[290]);

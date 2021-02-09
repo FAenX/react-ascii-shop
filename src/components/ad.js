@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
+// ad component
 const Ad =({state, dispatch})=>{
     return (                              
         <div className="container a-wrapper m-8 d">               

@@ -8,4 +8,5 @@ const rootReducer = combineReducers({
         reducer
     });
 
+// create redux store
 export const store = createStore(rootReducer);
