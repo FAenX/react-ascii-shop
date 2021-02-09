@@ -7,14 +7,19 @@ This is an ecommerce site, where you can buy all sorts of ascii faces like `(ノ
 FAQ
 ----
 
-### How do I start the app?
+#### How do I start the app?
 
-`npm run build` to build bundle react.
-`npm start` to serve
+##### build.
+`npm run build` 
 
+##### serve
+`npm start`
+
+#### development
 visit `127.0.0.1:3000` 
 
 ### What libraries/frameworks, packages, tools can have I used?
 - react
 - redux
 - bulma.css
+- browserify
