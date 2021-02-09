@@ -8,6 +8,9 @@ FAQ
 
 #### How do I start the app?
 
+##### install dependencies
+`npm install`
+
 ##### build.
 `npm run build` 
 
