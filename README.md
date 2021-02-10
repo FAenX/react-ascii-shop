@@ -20,7 +20,7 @@ FAQ
 #### development
 visit `127.0.0.1:3000` 
 
-### What libraries/frameworks, packages, tools can have I used?
+### What libraries/frameworks, packages, tools have I used?
 - react
 - redux
 - bulma.css
